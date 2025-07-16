@@ -60,14 +60,6 @@ yaxis: {
           }
         }
       },
-yaxis: {
-        labels: {
-          style: {
-            colors: "#64748b",
-            fontSize: "12px"
-          }
-        }
-      },
       tooltip: {
         theme: "light",
         style: {
