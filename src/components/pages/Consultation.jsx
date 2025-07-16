@@ -82,20 +82,19 @@ const Consultation = () => {
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <span>Online</span>
           </Badge>
-          <Button
+<Button
             variant="outline"
             size="sm"
             onClick={handleEndConsultation}
             icon="Square"
           >
             End Consultation
->
-            End Consultation
           </Button>
         </div>
       </div>
 
       {/* Emergency Information Banner */}
+      <Card className="bg-red-50 border-red-200 p-6">
         <div className="flex items-center space-x-4">
           <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-red-200 rounded-lg flex items-center justify-center">
             <ApperIcon name="AlertTriangle" size={24} className="text-red-600" />
