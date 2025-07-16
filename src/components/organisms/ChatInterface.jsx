@@ -27,11 +27,19 @@ const ChatInterface = ({ departmentId, departmentName }) => {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    // Load initial greeting message
+useEffect(() => {
+    // Load initial greeting message with symptom checker introduction
     const greeting = {
       id: Date.now(),
-      message: `Hello! I'm your AI ${departmentName} assistant. I'm here to help you with your health concerns. How can I assist you today?`,
+      message: `Hello! I'm your AI ${departmentName} assistant. I'm here to help you with your health concerns and can guide you through a comprehensive symptom assessment. 
+
+I can help you:
+• Check your symptoms through guided questions
+• Provide health recommendations based on your concerns
+• Suggest when to seek medical attention
+• Answer general health questions
+
+Please describe your symptoms or health concerns, and I'll guide you through a personalized assessment. How can I assist you today?`,
       isAi: true,
       timestamp: new Date().toISOString(),
       department: departmentName
@@ -39,7 +47,7 @@ const ChatInterface = ({ departmentId, departmentName }) => {
     setMessages([greeting]);
   }, [departmentName]);
 
-  const handleSendMessage = async () => {
+const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
     const userMessage = {
@@ -54,12 +62,12 @@ const ChatInterface = ({ departmentId, departmentName }) => {
     setIsLoading(true);
 
     try {
-      // Simulate AI response
+      // Simulate AI response with symptom checker analysis
       await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
       
       const aiResponse = {
         id: Date.now() + 1,
-        message: generateAIResponse(inputMessage, departmentName),
+        message: generateAIResponse(inputMessage, departmentName, messages),
         isAi: true,
         timestamp: new Date().toISOString(),
         department: departmentName
@@ -73,7 +81,15 @@ const ChatInterface = ({ departmentId, departmentName }) => {
     }
   };
 
-  const generateAIResponse = (userMessage, department) => {
+const generateAIResponse = (userMessage, department, conversationHistory) => {
+    const lowerMessage = userMessage.toLowerCase();
+    const isSymptomQuery = detectSymptomKeywords(lowerMessage);
+    const conversationLength = conversationHistory.length;
+    
+    if (isSymptomQuery || conversationLength > 2) {
+      return generateSymptomCheckerResponse(userMessage, department, conversationHistory);
+    }
+    
     const responses = {
       "General Practitioner": [
         "Based on your symptoms, I'd recommend monitoring your condition closely. Can you provide more details about when these symptoms started?",
@@ -104,6 +120,206 @@ const ChatInterface = ({ departmentId, departmentName }) => {
 
     const departmentResponses = responses[department] || responses["General Practitioner"];
     return departmentResponses[Math.floor(Math.random() * departmentResponses.length)];
+  };
+
+  const detectSymptomKeywords = (message) => {
+    const symptomKeywords = [
+      'pain', 'ache', 'hurt', 'sore', 'tender', 'headache', 'migraine',
+      'fever', 'chills', 'hot', 'cold', 'temperature',
+      'cough', 'sneeze', 'runny nose', 'congestion', 'sinus',
+      'nausea', 'vomit', 'stomach', 'diarrhea', 'constipation',
+      'dizzy', 'lightheaded', 'faint', 'vertigo',
+      'tired', 'fatigue', 'exhausted', 'weak', 'energy',
+      'rash', 'itchy', 'swollen', 'bruise', 'cut',
+      'chest pain', 'shortness of breath', 'breathing', 'wheezing',
+      'anxiety', 'depression', 'mood', 'stress', 'sleep',
+      'symptom', 'symptoms', 'feeling', 'unwell', 'sick'
+    ];
+    
+    return symptomKeywords.some(keyword => message.includes(keyword));
+  };
+
+  const generateSymptomCheckerResponse = (userMessage, department, conversationHistory) => {
+    const conversationLength = conversationHistory.length;
+    const lowerMessage = userMessage.toLowerCase();
+    
+    // Initial symptom assessment
+    if (conversationLength <= 3) {
+      return `I understand you're experiencing some health concerns. Let me help you through a systematic symptom assessment.
+
+**Step 1: Symptom Overview**
+Can you describe your main symptoms in detail? Please include:
+• What exactly are you feeling?
+• When did these symptoms start?
+• How severe would you rate them (1-10)?
+• Have they gotten worse, better, or stayed the same?
+
+This information will help me provide better guidance and determine if you need immediate medical attention.`;
+    }
+    
+    // Follow-up questions based on symptoms
+    if (conversationLength <= 6) {
+      if (lowerMessage.includes('pain')) {
+        return `**Step 2: Pain Assessment**
+Thank you for describing your pain. I need to understand it better:
+
+• Where exactly is the pain located?
+• How would you describe it? (sharp, dull, throbbing, burning, stabbing)
+• Does it radiate to other areas?
+• What makes it better or worse?
+• Are you taking any medications for it?
+
+Pain assessment is crucial for proper evaluation. Please be as specific as possible.`;
+      }
+      
+      if (lowerMessage.includes('fever') || lowerMessage.includes('temperature')) {
+        return `**Step 2: Fever Assessment**
+Fever can indicate various conditions. Let me gather more information:
+
+• Have you measured your temperature? If so, what was it?
+• Are you experiencing chills or sweats?
+• Any other symptoms like body aches, headache, or fatigue?
+• Have you been around anyone who's been sick recently?
+• Are you taking any fever-reducing medications?
+
+This will help determine the urgency and potential causes.`;
+      }
+      
+      return `**Step 2: Symptom Progression**
+Thank you for the details. Now I need to understand the pattern:
+
+• How long have you had these symptoms?
+• Have you noticed any triggers that make them worse?
+• Any associated symptoms you haven't mentioned?
+• Have you tried any treatments or remedies?
+• Any recent changes in your daily routine or environment?
+
+This information helps me provide more accurate guidance.`;
+    }
+    
+    // Assessment and recommendations
+    if (conversationLength <= 9) {
+      const urgencyLevel = assessUrgencyLevel(lowerMessage);
+      
+      if (urgencyLevel === 'high') {
+        return `**⚠️ URGENT ASSESSMENT RESULT**
+
+Based on your symptoms, I recommend **seeking immediate medical attention**. Here's why:
+
+• Your symptoms may indicate a condition requiring prompt evaluation
+• Early intervention can prevent complications
+• Professional medical assessment is needed for accurate diagnosis
+
+**Immediate Actions:**
+• Contact your doctor or visit an urgent care center
+• If symptoms worsen, consider emergency care
+• Keep track of any changes in your condition
+
+**When to seek emergency care:**
+• Severe difficulty breathing
+• Chest pain or pressure
+• Severe abdominal pain
+• High fever with confusion
+• Signs of severe dehydration
+
+Would you like me to help you find nearby medical facilities or provide more specific guidance for your situation?`;
+      }
+      
+      if (urgencyLevel === 'medium') {
+        return `**📋 ASSESSMENT RESULT - MODERATE CONCERN**
+
+Based on your symptoms, I recommend **scheduling a medical appointment within the next few days**. Here's my assessment:
+
+**Possible Considerations:**
+• Your symptoms warrant professional evaluation
+• Early treatment can improve outcomes
+• Monitoring is important to prevent progression
+
+**Recommended Actions:**
+• Schedule an appointment with your primary care physician
+• Continue monitoring your symptoms
+• Rest and maintain good hydration
+• Avoid strenuous activities until evaluated
+
+**Red Flags - Seek immediate care if you experience:**
+• Worsening symptoms
+• New concerning symptoms
+• Difficulty breathing
+• Severe pain
+
+**Self-Care Measures:**
+• Get adequate rest
+• Stay hydrated
+• Eat nutritious foods
+• Monitor your temperature
+
+Would you like specific guidance on managing your symptoms or help finding appropriate medical care?`;
+      }
+      
+      return `**✅ ASSESSMENT RESULT - LOW CONCERN**
+
+Based on your symptoms, this appears to be a **minor health concern** that can likely be managed with self-care, though monitoring is still important.
+
+**My Assessment:**
+• Your symptoms are common and typically resolve with time
+• Self-care measures should help improve your condition
+• Low risk of serious complications
+
+**Recommended Self-Care:**
+• Get plenty of rest
+• Stay well-hydrated
+• Maintain a healthy diet
+• Use over-the-counter medications as appropriate
+• Monitor your symptoms for changes
+
+**When to seek medical care:**
+• Symptoms persist beyond expected timeframe
+• Symptoms worsen significantly
+• New concerning symptoms develop
+• You have underlying health conditions
+
+**Follow-up Timeline:**
+• If no improvement in 3-5 days, consider seeing a healthcare provider
+• Continue monitoring daily
+
+Would you like specific advice on managing your symptoms or information about when to seek medical care?`;
+    }
+    
+    // Ongoing support and follow-up
+    return `I'm here to provide ongoing support for your health concerns. Based on our conversation, I can help you:
+
+• Monitor your symptom progression
+• Provide guidance on self-care measures
+• Help you decide when to seek medical care
+• Answer questions about your condition
+• Assist with finding appropriate healthcare resources
+
+Is there anything specific about your symptoms or care plan you'd like to discuss further?`;
+  };
+
+  const assessUrgencyLevel = (message) => {
+    const highUrgencyKeywords = [
+      'severe pain', 'chest pain', 'difficulty breathing', 'shortness of breath',
+      'high fever', 'severe headache', 'confusion', 'severe nausea',
+      'severe abdominal pain', 'blood', 'bleeding', 'severe dizziness',
+      'fainting', 'severe anxiety', 'panic attack', 'severe depression'
+    ];
+    
+    const mediumUrgencyKeywords = [
+      'persistent pain', 'moderate pain', 'fever', 'headache', 'nausea',
+      'vomiting', 'diarrhea', 'rash', 'swelling', 'fatigue',
+      'cough', 'sore throat', 'congestion'
+    ];
+    
+    if (highUrgencyKeywords.some(keyword => message.includes(keyword))) {
+      return 'high';
+    }
+    
+    if (mediumUrgencyKeywords.some(keyword => message.includes(keyword))) {
+      return 'medium';
+    }
+    
+    return 'low';
   };
 
   const handleFileUpload = async (file) => {
@@ -160,11 +376,11 @@ const ChatInterface = ({ departmentId, departmentName }) => {
     }
   };
 
-  if (messages.length === 0) {
+if (messages.length === 0) {
     return (
       <Empty
         type="chat"
-        action={() => setInputMessage("Hello, I need help with my health concerns.")}
+        action={() => setInputMessage("I'm experiencing some symptoms and would like a health assessment.")}
       />
     );
   }
@@ -231,8 +447,8 @@ const ChatInterface = ({ departmentId, departmentName }) => {
             <textarea
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type your health question here..."
+onKeyPress={handleKeyPress}
+              placeholder="Describe your symptoms or health concerns for a personalized assessment..."
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 outline-none resize-none"
               rows="2"
             />
