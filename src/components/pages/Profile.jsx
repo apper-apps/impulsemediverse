@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import ApperIcon from "@/components/ApperIcon";
-import Button from "@/components/atoms/Button";
-import Input from "@/components/atoms/Input";
-import Card from "@/components/atoms/Card";
-import Badge from "@/components/atoms/Badge";
 import { toast } from "react-toastify";
+import ApperIcon from "@/components/ApperIcon";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
+import Card from "@/components/atoms/Card";
+import Input from "@/components/atoms/Input";
 
 const Profile = () => {
   const [profile, setProfile] = useState({
@@ -245,18 +245,18 @@ const Profile = () => {
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+<div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Height</label>
-<label className="block text-sm font-medium text-gray-700 mb-1">Height</label>
-                {editing ? (
+{editing ? (
                   <Input
                     value={editForm.height}
                     onChange={(e) => handleInputChange("height", e.target.value)}
-                    placeholder="e.g., 5'10\""
+                    placeholder="e.g., 5'10&quot;"
                   />
                 ) : (
                   <p className="text-gray-900">{profile.height}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Weight</label>
