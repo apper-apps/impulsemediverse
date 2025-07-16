@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Chart from "react-apexcharts";
 import ApperIcon from "@/components/ApperIcon";
@@ -40,12 +40,12 @@ const HealthChart = ({ data, title, type = "line", color = "#3B82F6", showContro
           stops: [0, 90, 100]
         }
       },
-      grid: {
+grid: {
         borderColor: "#f1f5f9",
         strokeDashArray: 4
       },
       xaxis: {
-        categories: data.map(item => item.date),
+        categories: (data || []).map(item => item.date),
         labels: {
           style: {
             colors: "#64748b",
@@ -103,11 +103,10 @@ const HealthChart = ({ data, title, type = "line", color = "#3B82F6", showContro
 
     return baseOptions;
   };
-
-  const getAdvancedForecast = () => {
-    if (data.length < 4) return null;
+const getAdvancedForecast = () => {
+    if (!data || data.length < 4) return null;
     
-    const values = data.map(d => d.value);
+    const values = (data || []).map(d => d.value);
     const n = values.length;
     
     // Linear regression for trend
@@ -148,10 +147,10 @@ const HealthChart = ({ data, title, type = "line", color = "#3B82F6", showContro
     };
   };
 
-  const getSeries = () => {
+const getSeries = () => {
     const mainSeries = {
       name: title,
-      data: data.map(item => item.value)
+      data: (data || []).map(item => item.value)
     };
     
     if (!forecastEnabled) return [mainSeries];
@@ -161,14 +160,13 @@ const HealthChart = ({ data, title, type = "line", color = "#3B82F6", showContro
     
     const forecastSeries = {
       name: "Forecast",
-      data: [...Array(data.length - 1).fill(null), data[data.length - 1].value, ...forecast.points.map(p => p.value)]
+      data: [...Array((data || []).length - 1).fill(null), (data || [])[((data || []).length - 1)]?.value, ...forecast.points.map(p => p.value)]
     };
     
     return [mainSeries, forecastSeries];
   };
-
 const getInsight = () => {
-    if (!data || data.length < 2) return "Not enough data for insights";
+    if (!data || !Array.isArray(data) || data.length < 2) return "Not enough data for insights";
     
     const latestItem = data[data.length - 1];
     const previousItem = data[data.length - 2];
@@ -202,11 +200,10 @@ const getInsight = () => {
       strength: forecast.strength
     };
   };
-
-  const getHealthStatus = () => {
-    if (data.length === 0) return "no-data";
+const getHealthStatus = () => {
+    if (!data || !Array.isArray(data) || data.length === 0) return "no-data";
     
-    const latest = data[data.length - 1].value;
+    const latest = data[data.length - 1]?.value;
     const prediction = getTrendPrediction();
     
     if (prediction.trend === "positive" && latest > 0) return "improving";
@@ -227,13 +224,11 @@ const getInsight = () => {
     { key: "area", label: "Area", icon: "Activity" }
   ];
 
-  const exportData = () => {
-    const csvContent = [
-      ["Date", "Value", "Type"],
-      ...data.map(item => [item.date, item.value, "Actual"]),
-      ...(forecastEnabled && getAdvancedForecast() ? 
-        getAdvancedForecast().points.map(item => [item.date, item.value, "Forecast"]) : [])
-    ].map(row => row.join(",")).join("\n");
+const exportData = () => {
+    const csvContent = `data:text/csv;charset=utf-8,Date,Value,Type\n${[
+      ...(data || []).map(item => [item.date, item.value, "Actual"]),
+      ...(forecastEnabled && getAdvancedForecast()?.points?.map(p => [p.date, p.value, "Forecast"]) || [])
+    ].map(row => row.join(",")).join("\n")}`;
     
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
