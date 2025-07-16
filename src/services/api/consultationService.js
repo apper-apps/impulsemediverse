@@ -45,11 +45,13 @@ export const consultationService = {
     await delay(400);
     initializeData();
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    const newId = Math.max(...data.map(c => c.Id)) + 1;
+const newId = Math.max(...data.map(c => c.Id)) + 1;
+    const now = new Date().toISOString();
     const newConsultation = { 
       ...consultation, 
       Id: newId,
-      timestamp: new Date().toISOString(),
+      timestamp: now,
+      createdAt: now,
       status: "active"
     };
     data.push(newConsultation);

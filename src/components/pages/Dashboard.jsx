@@ -337,13 +337,22 @@ return (
               <div className="space-y-4">
                 {recentConsultations.length > 0 ? (
                   recentConsultations.map((consultation) => (
-                    <div key={consultation.id} className="border-b border-gray-100 pb-4 last:border-b-0">
+<div key={consultation.id} className="border-b border-gray-100 pb-4 last:border-b-0">
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="font-medium text-gray-900">{consultation.department}</h3>
                           <p className="text-sm text-gray-600">{consultation.reason}</p>
                           <p className="text-xs text-gray-500">
-                            {format(new Date(consultation.createdAt), 'MMM d, yyyy')}
+                            {(() => {
+                              try {
+                                const date = consultation?.createdAt ? new Date(consultation.createdAt) : null;
+                                return date && !isNaN(date.getTime()) 
+                                  ? format(date, 'MMM d, yyyy')
+                                  : 'Date unavailable';
+                              } catch (error) {
+                                return 'Date unavailable';
+                              }
+                            })()}
                           </p>
                         </div>
                         <Badge variant={consultation.status === 'completed' ? 'success' : 'default'}>
@@ -375,13 +384,22 @@ return (
               <div className="space-y-4">
                 {recentRecords.length > 0 ? (
                   recentRecords.map((record) => (
-                    <div key={record.id} className="border-b border-gray-100 pb-4 last:border-b-0">
+<div key={record.id} className="border-b border-gray-100 pb-4 last:border-b-0">
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="font-medium text-gray-900">{record.type}</h3>
                           <p className="text-sm text-gray-600">{record.description}</p>
                           <p className="text-xs text-gray-500">
-                            {format(new Date(record.createdAt), 'MMM d, yyyy')}
+                            {(() => {
+                              try {
+                                const date = record?.createdAt ? new Date(record.createdAt) : null;
+                                return date && !isNaN(date.getTime()) 
+                                  ? format(date, 'MMM d, yyyy')
+                                  : 'Date unavailable';
+                              } catch (error) {
+                                return 'Date unavailable';
+                              }
+                            })()}
                           </p>
                         </div>
                         <ApperIcon name="FileText" size={20} className="text-gray-400" />
