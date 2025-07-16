@@ -1,0 +1,70 @@
+[
+  {
+    "Id": 1,
+    "patientId": "patient1",
+    "metric": "Blood Pressure",
+    "unit": "mmHg",
+    "data": [
+      { "date": "2023-07-15", "value": 125, "systolic": 125, "diastolic": 82 },
+      { "date": "2023-08-15", "value": 122, "systolic": 122, "diastolic": 80 },
+      { "date": "2023-09-15", "value": 118, "systolic": 118, "diastolic": 78 },
+      { "date": "2023-10-15", "value": 120, "systolic": 120, "diastolic": 79 },
+      { "date": "2023-11-15", "value": 116, "systolic": 116, "diastolic": 76 },
+      { "date": "2023-12-15", "value": 119, "systolic": 119, "diastolic": 77 },
+      { "date": "2024-01-15", "value": 115, "systolic": 115, "diastolic": 75 }
+    ],
+    "normalRange": { "min": 90, "max": 140 },
+    "category": "Cardiovascular"
+  },
+  {
+    "Id": 2,
+    "patientId": "patient1",
+    "metric": "Cholesterol",
+    "unit": "mg/dL",
+    "data": [
+      { "date": "2023-07-15", "value": 195 },
+      { "date": "2023-08-15", "value": 190 },
+      { "date": "2023-09-15", "value": 185 },
+      { "date": "2023-10-15", "value": 188 },
+      { "date": "2023-11-15", "value": 182 },
+      { "date": "2023-12-15", "value": 180 },
+      { "date": "2024-01-15", "value": 175 }
+    ],
+    "normalRange": { "min": 100, "max": 200 },
+    "category": "Cardiovascular"
+  },
+  {
+    "Id": 3,
+    "patientId": "patient1",
+    "metric": "Blood Sugar",
+    "unit": "mg/dL",
+    "data": [
+      { "date": "2023-07-15", "value": 98 },
+      { "date": "2023-08-15", "value": 95 },
+      { "date": "2023-09-15", "value": 92 },
+      { "date": "2023-10-15", "value": 94 },
+      { "date": "2023-11-15", "value": 90 },
+      { "date": "2023-12-15", "value": 93 },
+      { "date": "2024-01-15", "value": 91 }
+    ],
+    "normalRange": { "min": 70, "max": 100 },
+    "category": "Metabolic"
+  },
+  {
+    "Id": 4,
+    "patientId": "patient1",
+    "metric": "Weight",
+    "unit": "lbs",
+    "data": [
+      { "date": "2023-07-15", "value": 175 },
+      { "date": "2023-08-15", "value": 173 },
+      { "date": "2023-09-15", "value": 171 },
+      { "date": "2023-10-15", "value": 169 },
+      { "date": "2023-11-15", "value": 167 },
+      { "date": "2023-12-15", "value": 165 },
+      { "date": "2024-01-15", "value": 163 }
+    ],
+    "normalRange": { "min": 140, "max": 180 },
+    "category": "General"
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "Id": 1,
+    "patientId": "patient1",
+    "department": "General Practitioner",
+    "departmentId": 1,
+    "messages": [
+      {
+        "id": 1,
+        "message": "Hello! I'm experiencing some fatigue and mild headaches for the past week.",
+        "isAi": false,
+        "timestamp": "2024-01-15T10:30:00Z"
+      },
+      {
+        "id": 2,
+        "message": "I understand your concern about fatigue and headaches. Can you tell me more about when these symptoms occur most frequently? Also, have you noticed any changes in your sleep patterns or stress levels recently?",
+        "isAi": true,
+        "timestamp": "2024-01-15T10:31:00Z"
+      }
+    ],
+    "files": [],
+    "timestamp": "2024-01-15T10:30:00Z",
+    "summary": "Patient consultation regarding fatigue and headaches. Initial assessment and symptom evaluation.",
+    "status": "active"
+  },
+  {
+    "Id": 2,
+    "patientId": "patient1",
+    "department": "Cardiologist",
+    "departmentId": 2,
+    "messages": [
+      {
+        "id": 1,
+        "message": "I've been having chest discomfort during exercise. Should I be concerned?",
+        "isAi": false,
+        "timestamp": "2024-01-14T14:20:00Z"
+      },
+      {
+        "id": 2,
+        "message": "Chest discomfort during exercise is something we should take seriously. Can you describe the type of discomfort - is it a sharp pain, pressure, or tightness? Also, how long does it last and does it go away when you rest?",
+        "isAi": true,
+        "timestamp": "2024-01-14T14:21:00Z"
+      }
+    ],
+    "files": [],
+    "timestamp": "2024-01-14T14:20:00Z",
+    "summary": "Cardiac consultation for exercise-related chest discomfort. Symptom assessment and evaluation.",
+    "status": "completed"
+  },
+  {
+    "Id": 3,
+    "patientId": "patient1",
+    "department": "Psychologist",
+    "departmentId": 4,
+    "messages": [
+      {
+        "id": 1,
+        "message": "I've been feeling anxious about work lately and having trouble sleeping.",
+        "isAi": false,
+        "timestamp": "2024-01-13T16:45:00Z"
+      },
+      {
+        "id": 2,
+        "message": "Thank you for sharing your concerns about work-related anxiety and sleep difficulties. These are common issues that many people face. Can you tell me more about what specifically at work is causing you anxiety? Also, how long have you been experiencing these sleep troubles?",
+        "isAi": true,
+        "timestamp": "2024-01-13T16:46:00Z"
+      }
+    ],
+    "files": [],
+    "timestamp": "2024-01-13T16:45:00Z",
+    "summary": "Psychological consultation for work-related anxiety and sleep issues. Initial assessment and support.",
+    "status": "completed"
+  }
+]

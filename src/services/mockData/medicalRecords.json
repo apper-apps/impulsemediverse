@@ -1,0 +1,90 @@
+[
+  {
+    "Id": 1,
+    "patientId": "patient1",
+    "fileName": "Blood_Test_Results_Jan_2024.pdf",
+    "fileType": "pdf",
+    "uploadDate": "2024-01-15T09:00:00Z",
+    "parsedData": {
+      "type": "blood_test",
+      "results": {
+        "cholesterol": "180 mg/dL",
+        "glucose": "95 mg/dL",
+        "hemoglobin": "14.2 g/dL",
+        "white_blood_cells": "6500/μL"
+      },
+      "status": "normal",
+      "notes": "All values within normal range"
+    },
+    "department": "General Practitioner",
+    "category": "Lab Results"
+  },
+  {
+    "Id": 2,
+    "patientId": "patient1",
+    "fileName": "ECG_Report_Jan_2024.pdf",
+    "fileType": "pdf",
+    "uploadDate": "2024-01-14T11:30:00Z",
+    "parsedData": {
+      "type": "ecg",
+      "results": {
+        "heart_rate": "72 bpm",
+        "rhythm": "Normal sinus rhythm",
+        "intervals": "Normal PR, QRS, QT intervals",
+        "axis": "Normal axis"
+      },
+      "status": "normal",
+      "notes": "Normal ECG findings"
+    },
+    "department": "Cardiologist",
+    "category": "Cardiac Tests"
+  },
+  {
+    "Id": 3,
+    "patientId": "patient1",
+    "fileName": "Chest_X_Ray_Dec_2023.jpg",
+    "fileType": "image",
+    "uploadDate": "2024-01-10T14:15:00Z",
+    "parsedData": {
+      "type": "xray",
+      "results": {
+        "lungs": "Clear bilateral lung fields",
+        "heart": "Normal cardiac silhouette",
+        "bones": "No acute fractures",
+        "soft_tissues": "Normal"
+      },
+      "status": "normal",
+      "notes": "No acute abnormalities identified"
+    },
+    "department": "General Practitioner",
+    "category": "Imaging"
+  },
+  {
+    "Id": 4,
+    "patientId": "patient1",
+    "fileName": "Prescription_History_2023.pdf",
+    "fileType": "pdf",
+    "uploadDate": "2024-01-08T10:00:00Z",
+    "parsedData": {
+      "type": "prescription",
+      "medications": [
+        {
+          "name": "Lisinopril",
+          "dosage": "10mg",
+          "frequency": "Once daily",
+          "duration": "Ongoing"
+        },
+        {
+          "name": "Vitamin D3",
+          "dosage": "2000 IU",
+          "frequency": "Once daily",
+          "duration": "Ongoing"
+        }
+      ],
+      "allergies": ["Penicillin"],
+      "notes": "Current active medications"
+    },
+    "department": "General Practitioner",
+    "category": "Medications"
+  }
+]
