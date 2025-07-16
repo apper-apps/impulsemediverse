@@ -1,17 +1,21 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import ApperIcon from "@/components/ApperIcon";
-import Card from "@/components/atoms/Card";
-import Button from "@/components/atoms/Button";
-import Badge from "@/components/atoms/Badge";
-import StatCard from "@/components/molecules/StatCard";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
-import { departmentService } from "@/services/api/departmentService";
-import { consultationService } from "@/services/api/consultationService";
-import { medicalRecordService } from "@/services/api/medicalRecordService";
 import { format } from "date-fns";
+import ApperIcon from "@/components/ApperIcon";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
+import Card from "@/components/atoms/Card";
+import Error from "@/components/ui/Error";
+import Loading from "@/components/ui/Loading";
+import Records from "@/components/pages/Records";
+import Consultations from "@/components/pages/Consultations";
+import Departments from "@/components/pages/Departments";
+import Consultation from "@/components/pages/Consultation";
+import StatCard from "@/components/molecules/StatCard";
+import { medicalRecordService } from "@/services/api/medicalRecordService";
+import { consultationService } from "@/services/api/consultationService";
+import { departmentService } from "@/services/api/departmentService";
 
 const Dashboard = () => {
   const [departments, setDepartments] = useState([]);
@@ -19,7 +23,93 @@ const Dashboard = () => {
   const [recentRecords, setRecentRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+const navigate = useNavigate();
+
+  // Health trends data and helper functions
+  const [healthTrends, setHealthTrends] = useState([
+    {
+      Id: "1",
+      metric: "Blood Pressure",
+      category: "Cardiovascular",
+      unit: "mmHg",
+      data: [
+        { date: "2024-01-01", value: 120 },
+        { date: "2024-01-15", value: 118 },
+        { date: "2024-02-01", value: 115 }
+      ]
+    },
+    {
+      Id: "2", 
+      metric: "Heart Rate",
+      category: "Cardiovascular",
+      unit: "bpm",
+      data: [
+        { date: "2024-01-01", value: 75 },
+        { date: "2024-01-15", value: 72 },
+        { date: "2024-02-01", value: 70 }
+      ]
+    },
+    {
+      Id: "3",
+      metric: "Blood Sugar",
+      category: "Metabolic", 
+      unit: "mg/dL",
+      data: [
+        { date: "2024-01-01", value: 95 },
+        { date: "2024-01-15", value: 92 },
+        { date: "2024-02-01", value: 88 }
+      ]
+    },
+    {
+      Id: "4",
+      metric: "Weight",
+      category: "Metabolic",
+      unit: "lbs",
+      data: [
+        { date: "2024-01-01", value: 180 },
+        { date: "2024-01-15", value: 178 },
+        { date: "2024-02-01", value: 175 }
+      ]
+    }
+  ]);
+
+  const getHealthTrendInsight = (trend) => {
+    if (!trend?.data || trend.data.length < 2) {
+      return { status: "stable", change: 0, message: "Insufficient data" };
+    }
+    
+    const recent = trend.data[trend.data.length - 1]?.value || 0;
+    const previous = trend.data[trend.data.length - 2]?.value || 0;
+    const change = recent - previous;
+    
+    let status = "stable";
+    if (trend.metric === "Blood Pressure" || trend.metric === "Blood Sugar" || trend.metric === "Weight") {
+      status = change < 0 ? "improving" : change > 0 ? "concerning" : "stable";
+    } else if (trend.metric === "Heart Rate") {
+      status = Math.abs(change) < 5 ? "stable" : change < 0 ? "improving" : "concerning";
+    }
+    
+    const message = change > 0 ? `+${change} ${trend.unit} from last reading` : 
+                   change < 0 ? `${change} ${trend.unit} from last reading` :
+                   "No change from last reading";
+    
+    return { status, change, message };
+  };
+
+  const getHealthTrendPrediction = (trend) => {
+    if (!trend?.data || trend.data.length < 2) {
+      return "Need more data for accurate prediction";
+    }
+    
+    const insights = {
+      "Blood Pressure": "Trending downward - maintain current lifestyle",
+      "Heart Rate": "Stable range - excellent cardiovascular health",
+      "Blood Sugar": "Improving control - continue current diet plan", 
+      "Weight": "Steady progress - on track to reach target"
+    };
+    
+    return insights[trend.metric] || "Continue monitoring for optimal health";
+  };
 
   useEffect(() => {
     loadDashboardData();
@@ -239,8 +329,101 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
-        </Card>
+</Card>
       </div>
+
+      {/* Health Trend Cards */}
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-gray-900">Health Trends & Predictions</h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/trends")}
+          >
+            View All Trends
+          </Button>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {healthTrends.slice(0, 4).map((trend) => {
+            const insight = getHealthTrendInsight(trend);
+            const prediction = getHealthTrendPrediction(trend);
+            
+            return (
+              <motion.div
+                key={trend.Id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-all duration-300"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                      insight.status === "improving" ? "bg-green-100" :
+                      insight.status === "concerning" ? "bg-red-100" :
+                      "bg-blue-100"
+                    }`}>
+                      <ApperIcon 
+                        name={
+                          trend.category === "Cardiovascular" ? "Heart" :
+                          trend.category === "Metabolic" ? "Activity" :
+                          "TrendingUp"
+                        } 
+                        size={24}
+                        className={
+                          insight.status === "improving" ? "text-green-600" :
+                          insight.status === "concerning" ? "text-red-600" :
+                          "text-blue-600"
+                        }
+                      />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">{trend.metric}</h3>
+                      <p className="text-sm text-gray-600">{trend.category}</p>
+                    </div>
+                  </div>
+                  <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    insight.status === "improving" ? "bg-green-100 text-green-800" :
+                    insight.status === "concerning" ? "bg-red-100 text-red-800" :
+                    "bg-blue-100 text-blue-800"
+                  }`}>
+                    {insight.status === "improving" ? "Improving" :
+                     insight.status === "concerning" ? "Needs Attention" :
+                     "Stable"}
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Current</span>
+                    <span className="text-lg font-semibold text-gray-900">
+                      {trend.data[trend.data.length - 1]?.value} {trend.unit}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <ApperIcon 
+                      name={insight.change > 0 ? "TrendingUp" : "TrendingDown"} 
+                      size={16}
+                      className={insight.change > 0 ? "text-green-600" : "text-red-600"}
+                    />
+                    <span className="text-sm text-gray-600">{insight.message}</span>
+                  </div>
+                  
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <ApperIcon name="Zap" size={14} className="text-yellow-600" />
+                      <span className="text-xs font-medium text-gray-700">Prediction</span>
+                    </div>
+                    <p className="text-sm text-gray-600">{prediction}</p>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </Card>
 
       {/* Available Departments */}
       <Card className="p-6">
@@ -261,10 +444,9 @@ const Dashboard = () => {
               </div>
             </div>
           ))}
-        </div>
+</div>
       </Card>
     </div>
   );
 };
-
 export default Dashboard;

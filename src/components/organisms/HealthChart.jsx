@@ -76,7 +76,7 @@ const HealthChart = ({ data, title, type = "line", color = "#3B82F6" }) => {
     { key: "1y", label: "1Y" }
   ];
 
-  const getInsight = () => {
+const getInsight = () => {
     if (data.length < 2) return "Not enough data for insights";
     
     const latest = data[data.length - 1].value;
@@ -85,6 +85,38 @@ const HealthChart = ({ data, title, type = "line", color = "#3B82F6" }) => {
     const percentage = Math.abs(((latest - previous) / previous) * 100).toFixed(1);
     
     return `${trend} by ${percentage}% from last reading`;
+  };
+
+  const getTrendPrediction = () => {
+    if (data.length < 3) return "Need more data for predictions";
+    
+    // Calculate trend using last 3 data points
+    const recent = data.slice(-3);
+    const values = recent.map(d => d.value);
+    const avgChange = (values[2] - values[0]) / 2;
+    const nextValue = values[2] + avgChange;
+    
+    const direction = avgChange > 0 ? "continue rising" : "continue declining";
+    const confidence = Math.min(95, Math.max(65, 100 - Math.abs(avgChange) * 2));
+    
+    return {
+      prediction: nextValue.toFixed(1),
+      direction,
+      confidence: confidence.toFixed(0),
+      trend: avgChange > 0 ? "positive" : "negative"
+    };
+  };
+
+  const getHealthStatus = () => {
+    if (data.length === 0) return "no-data";
+    
+    const latest = data[data.length - 1].value;
+    const prediction = getTrendPrediction();
+    
+    // Simple health status based on trend
+    if (prediction.trend === "positive" && latest > 0) return "improving";
+    if (prediction.trend === "negative" && latest > 0) return "concerning";
+    return "stable";
   };
 
   return (
