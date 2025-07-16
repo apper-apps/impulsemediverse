@@ -1,16 +1,24 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
 
 const Header = ({ currentDepartment, onMobileMenuToggle }) => {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const { logout, user } = useAuth();
 
   const notifications = [
     { id: 1, message: "New health trends available", type: "info", time: "2 min ago" },
     { id: 2, message: "Consultation reminder", type: "warning", time: "10 min ago" },
     { id: 3, message: "Lab results uploaded", type: "success", time: "1 hour ago" }
-  ];
+];
+
+  const handleSignOut = async () => {
+    setShowUserMenu(false);
+    await logout();
+  };
 
   return (
     <header className="bg-white shadow-lg border-b border-gray-100 sticky top-0 z-50">
@@ -85,15 +93,47 @@ const Header = ({ currentDepartment, onMobileMenuToggle }) => {
                 </motion.div>
               )}
             </div>
-
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center">
-                <ApperIcon name="User" size={16} className="text-white" />
-              </div>
-              <div className="hidden sm:block">
-                <p className="text-sm font-medium text-gray-900">John Smith</p>
-                <p className="text-xs text-gray-500">Patient</p>
-              </div>
+<div className="relative">
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center">
+                  <ApperIcon name="User" size={16} className="text-white" />
+                </div>
+                <div className="hidden sm:block">
+                  <p className="text-sm font-medium text-gray-900">{user?.name || 'John Smith'}</p>
+                  <p className="text-xs text-gray-500">{user?.role || 'Patient'}</p>
+                </div>
+                <ApperIcon name="ChevronDown" size={16} className="text-gray-500" />
+              </button>
+              
+              {showUserMenu && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 z-50"
+                >
+                  <div className="p-2">
+                    <button className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left">
+                      <ApperIcon name="User" size={18} className="text-gray-600" />
+                      <span className="text-sm text-gray-900">View Profile</span>
+                    </button>
+                    <button className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left">
+                      <ApperIcon name="Settings" size={18} className="text-gray-600" />
+                      <span className="text-sm text-gray-900">Settings</span>
+                    </button>
+                    <div className="border-t border-gray-100 my-2"></div>
+                    <button 
+                      onClick={handleSignOut}
+                      className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-red-50 transition-colors text-left group"
+                    >
+                      <ApperIcon name="LogOut" size={18} className="text-gray-600 group-hover:text-red-600" />
+                      <span className="text-sm text-gray-900 group-hover:text-red-600">Sign Out</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
             </div>
           </div>
         </div>
