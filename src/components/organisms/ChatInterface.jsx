@@ -1,31 +1,94 @@
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import ApperIcon from "@/components/ApperIcon";
-import Button from "@/components/atoms/Button";
-import ChatMessage from "@/components/molecules/ChatMessage";
-import FileUpload from "@/components/molecules/FileUpload";
-import Loading from "@/components/ui/Loading";
-import Empty from "@/components/ui/Empty";
-import { consultationService } from "@/services/api/consultationService";
+import React, { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { format } from "date-fns";
 import { toast } from "react-toastify";
-
+import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
+import Empty from "@/components/ui/Empty";
+import Loading from "@/components/ui/Loading";
+import FileUpload from "@/components/molecules/FileUpload";
+import ChatMessage from "@/components/molecules/ChatMessage";
+import departmentsData from "@/services/mockData/departments.json";
+import medicalRecordsData from "@/services/mockData/medicalRecords.json";
+import healthTrendsData from "@/services/mockData/healthTrends.json";
+import consultationsData from "@/services/mockData/consultations.json";
+import { consultationService } from "@/services/api/consultationService";
 const ChatInterface = ({ departmentId, departmentName }) => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showFileUpload, setShowFileUpload] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [transcript, setTranscript] = useState("");
+  const [speechRecognition, setSpeechRecognition] = useState(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(() => {
+useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    // Initialize speech recognition
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+      
+      recognition.onresult = (event) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+        
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript;
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+        
+        setTranscript(finalTranscript + interimTranscript);
+        
+        if (finalTranscript) {
+          setInputMessage(prev => prev + finalTranscript);
+        }
+      };
+      
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsRecording(false);
+        setTranscript("");
+        
+        switch (event.error) {
+          case 'no-speech':
+            toast.error("No speech detected. Please try again.");
+            break;
+          case 'not-allowed':
+            toast.error("Microphone access denied. Please enable microphone permissions.");
+            break;
+          case 'network':
+            toast.error("Network error. Please check your connection.");
+            break;
+          default:
+            toast.error("Speech recognition error. Please try again.");
+        }
+      };
+      
+      recognition.onend = () => {
+        setIsRecording(false);
+        setTranscript("");
+      };
+      
+      setSpeechRecognition(recognition);
+    }
+  }, []);
 
 useEffect(() => {
     // Load initial greeting message with symptom checker introduction
@@ -39,7 +102,7 @@ I can help you:
 • Suggest when to seek medical attention
 • Answer general health questions
 
-Please describe your symptoms or health concerns, and I'll guide you through a personalized assessment. How can I assist you today?`,
+Please describe your symptoms or health concerns, and I'll guide you through a personalized assessment. You can type your message or use the voice recording feature for hands-free interaction. How can I assist you today?`,
       isAi: true,
       timestamp: new Date().toISOString(),
       department: departmentName
@@ -355,19 +418,39 @@ Is there anything specific about your symptoms or care plan you'd like to discus
       setIsLoading(false);
     }
   };
-
-  const handleVoiceRecording = () => {
-    setIsRecording(!isRecording);
-    if (!isRecording) {
+const startVoiceRecording = () => {
+    if (!speechRecognition) {
+      toast.error("Speech recognition is not supported in this browser. Please use Chrome, Safari, or Edge.");
+      return;
+    }
+    
+    setIsRecording(true);
+    setTranscript("");
+    
+    try {
+      speechRecognition.start();
       toast.info("Voice recording started. Speak your question...");
-      // Simulate voice recording
-      setTimeout(() => {
-        setIsRecording(false);
-        setInputMessage("This is a voice-recorded message about my health concerns.");
-        toast.success("Voice recording completed!");
-      }, 3000);
+    } catch (error) {
+      console.error('Failed to start speech recognition:', error);
+      setIsRecording(false);
+      toast.error("Failed to start voice recording. Please try again.");
     }
   };
+  
+  const stopVoiceRecording = () => {
+    if (speechRecognition && isRecording) {
+      speechRecognition.stop();
+      toast.success("Voice recording completed!");
+    }
+  };
+  
+  const handleVoiceRecording = () => {
+    if (isRecording) {
+      stopVoiceRecording();
+    } else {
+      startVoiceRecording();
+    }
+};
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -376,7 +459,7 @@ Is there anything specific about your symptoms or care plan you'd like to discus
     }
   };
 
-if (messages.length === 0) {
+  if (messages.length === 0) {
     return (
       <Empty
         type="chat"
@@ -438,6 +521,24 @@ if (messages.length === 0) {
                 onFileUpload={handleFileUpload}
                 className="border border-gray-200 rounded-lg p-4"
               />
+</motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* Real-time transcript display */}
+        <AnimatePresence>
+          {isRecording && transcript && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg"
+            >
+              <div className="flex items-center space-x-2 mb-2">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-blue-700">Live Transcription</span>
+              </div>
+              <p className="text-sm text-blue-800 italic">"{transcript}"</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -447,7 +548,7 @@ if (messages.length === 0) {
             <textarea
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-onKeyPress={handleKeyPress}
+              onKeyPress={handleKeyPress}
               placeholder="Describe your symptoms or health concerns for a personalized assessment..."
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 outline-none resize-none"
               rows="2"
@@ -458,6 +559,7 @@ onKeyPress={handleKeyPress}
             <button
               onClick={() => setShowFileUpload(!showFileUpload)}
               className="p-3 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+              title="Upload file"
             >
               <ApperIcon name="Paperclip" size={20} />
             </button>
@@ -469,6 +571,8 @@ onKeyPress={handleKeyPress}
                   ? "bg-red-100 text-red-600 voice-recording" 
                   : "bg-blue-100 text-blue-600 hover:bg-blue-200"
               }`}
+              title={isRecording ? "Stop recording" : "Start voice recording"}
+              disabled={!speechRecognition}
             >
               <ApperIcon name={isRecording ? "MicOff" : "Mic"} size={20} />
             </button>
@@ -477,6 +581,7 @@ onKeyPress={handleKeyPress}
               onClick={handleSendMessage}
               disabled={!inputMessage.trim() || isLoading}
               className="p-3"
+              title="Send message"
             >
               <ApperIcon name="Send" size={20} />
             </Button>
