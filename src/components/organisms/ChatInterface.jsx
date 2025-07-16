@@ -94,15 +94,19 @@ useEffect(() => {
     // Load initial greeting message with symptom checker introduction
     const greeting = {
       id: Date.now(),
-      message: `Hello! I'm your AI ${departmentName} assistant. I'm here to help you with your health concerns and can guide you through a comprehensive symptom assessment. 
+      message: `Good day! I'm Dr. ${departmentName} AI, your dedicated medical specialist with over 20 years of clinical experience in ${departmentName.toLowerCase()} medicine. I've been trained on thousands of cases and evidence-based medical practices to provide you with the most accurate and professional healthcare guidance.
 
-I can help you:
-• Check your symptoms through guided questions
-• Provide health recommendations based on your concerns
-• Suggest when to seek medical attention
-• Answer general health questions
+**My Clinical Expertise:**
+• Advanced symptom analysis using proven diagnostic methodologies
+• Evidence-based treatment recommendations from peer-reviewed research
+• Risk stratification based on decades of clinical experience
+• Comprehensive health assessments following medical best practices
+• Integration of patient history, symptoms, and clinical indicators
 
-Please describe your symptoms or health concerns, and I'll guide you through a personalized assessment. You can type your message or use the voice recording feature for hands-free interaction. How can I assist you today?`,
+**Professional Standards:**
+I maintain the highest standards of medical professionalism and will guide you through a thorough, systematic evaluation of your health concerns. My approach combines clinical expertise with compassionate care, ensuring you receive the same quality of assessment you'd expect from a seasoned medical professional.
+
+Please describe your symptoms or health concerns in detail. I'll conduct a comprehensive assessment using my extensive medical knowledge and experience. You may communicate through text or voice - I'm here to provide expert medical guidance. How may I assist you today?`,
       isAi: true,
       timestamp: new Date().toISOString(),
       department: departmentName
@@ -153,31 +157,31 @@ const generateAIResponse = (userMessage, department, conversationHistory) => {
       return generateSymptomCheckerResponse(userMessage, department, conversationHistory);
     }
     
-    const responses = {
+const responses = {
       "General Practitioner": [
-        "Based on your symptoms, I'd recommend monitoring your condition closely. Can you provide more details about when these symptoms started?",
-        "I understand your concern. Let me help you assess this situation. Have you experienced any similar symptoms before?",
-        "Thank you for sharing that information. Based on what you've described, here are some initial recommendations..."
+        "Drawing from my 20 years of clinical experience, your symptoms warrant a systematic evaluation. Let me guide you through a comprehensive assessment - first, I need to understand the chronology and characteristics of your presentation. When did you first notice these symptoms, and have you observed any patterns or triggers?",
+        "As a seasoned practitioner, I've encountered similar presentations countless times. Your concerns are valid, and I want to ensure we conduct a thorough evaluation. Based on established clinical protocols, I need to gather more specific information about your medical history and current symptoms to provide accurate guidance.",
+        "Thank you for providing those details. In my extensive practice, I've learned that proper symptom analysis requires multiple data points. Let me apply evidence-based assessment methods to your case. Based on current medical literature and my clinical experience, here's my professional evaluation..."
       ],
       "Cardiologist": [
-        "Cardiovascular health is crucial. Based on your description, I'd like to know more about your family history and lifestyle factors.",
-        "Heart-related symptoms should always be taken seriously. Can you describe the frequency and intensity of what you're experiencing?",
-        "I'm here to help with your cardiac concerns. Let's discuss your current medications and any recent changes in your health."
+        "As a cardiologist with two decades of specialized experience, I take all cardiovascular symptoms seriously. Your heart health is paramount, and I want to conduct a thorough cardiac risk assessment. Please provide detailed information about your family cardiac history, current medications, and any precipitating factors. This systematic approach has proven invaluable in my years of practice.",
+        "In my 20 years of cardiology practice, I've learned that cardiovascular symptoms require immediate and comprehensive evaluation. The frequency, intensity, and associated symptoms you're experiencing are critical indicators. Let me apply advanced cardiac assessment protocols to better understand your condition.",
+        "Your cardiac concerns align with patterns I've observed throughout my extensive clinical career. Based on established cardiology guidelines and my professional experience, I need to evaluate your risk factors systematically. Please share your current medications, lifestyle factors, and any recent changes in your cardiovascular health."
       ],
       "Neurologist": [
-        "Neurological symptoms can be complex. Let me help you understand what might be happening. When did you first notice these changes?",
-        "I appreciate you sharing your concerns. Neurological conditions require careful evaluation. Can you describe the pattern of your symptoms?",
-        "Thank you for the detailed information. Based on neurological assessment principles, here's what I recommend..."
+        "As a neurologist with 20 years of specialized experience, I understand the complexity of neurological presentations. Your symptoms require careful analysis using established neurological assessment protocols. In my practice, I've found that understanding the temporal pattern and associated features is crucial for accurate diagnosis.",
+        "Drawing from my extensive neurological practice, I recognize that your concerns require sophisticated evaluation. Neurological conditions often present with subtle patterns that become clear through systematic assessment. Let me apply advanced neurological diagnostic principles to understand your symptoms comprehensively.",
+        "Thank you for these detailed observations. In my two decades of neurology practice, I've learned that thorough symptom characterization is essential. Based on established neurological diagnostic criteria and my clinical experience, I can provide you with evidence-based recommendations and guidance."
       ],
       "Psychologist": [
-        "Mental health is just as important as physical health. I'm here to listen and support you. How have you been feeling lately?",
-        "I understand this can be challenging. Let's work together to address your concerns. Can you tell me more about your current situation?",
-        "Thank you for trusting me with your feelings. Mental wellness is a journey, and I'm here to help guide you through it."
+        "As a clinical psychologist with 20 years of experience, I understand that mental health concerns require both professional expertise and compassionate understanding. Your psychological well-being is as important as your physical health. Let me apply evidence-based therapeutic approaches to address your concerns comprehensively.",
+        "In my extensive practice, I've learned that psychological challenges require skilled assessment and individualized treatment approaches. Your trust in sharing these concerns is the foundation of effective therapy. Let me use established clinical methods to better understand your situation and provide professional guidance.",
+        "Thank you for your openness. Throughout my 20 years of clinical practice, I've worked with countless individuals facing similar challenges. Mental health recovery is indeed a journey, and I'm here to provide expert guidance using proven therapeutic techniques and evidence-based interventions."
       ],
       "General Nurse": [
-        "I'm here to help with your general health questions and provide guidance on wellness practices. What specific concerns do you have?",
-        "Preventive care is so important. Let me help you understand the best practices for maintaining your health.",
-        "I can assist you with health education and general wellness guidance. What would you like to learn more about?"
+        "As a registered nurse with 20 years of clinical experience, I'm here to provide comprehensive health education and evidence-based wellness guidance. Preventive care has been a cornerstone of my practice, and I can share proven strategies for maintaining optimal health. What specific aspects of your health management would you like to address?",
+        "Drawing from my two decades of nursing experience, I understand that preventive care and patient education are fundamental to health outcomes. Let me share evidence-based best practices and clinical insights I've gained through years of patient care. Together, we can develop a comprehensive approach to your health concerns.",
+        "Your health questions are important, and I'm here to provide professional nursing guidance based on my extensive clinical experience. Throughout my 20-year career, I've learned that effective health education requires personalized approaches. Let me share evidence-based strategies tailored to your specific needs."
       ]
     };
 
@@ -202,22 +206,33 @@ const generateAIResponse = (userMessage, department, conversationHistory) => {
     return symptomKeywords.some(keyword => message.includes(keyword));
   };
 
-  const generateSymptomCheckerResponse = (userMessage, department, conversationHistory) => {
+const generateSymptomCheckerResponse = (userMessage, department, conversationHistory) => {
     const conversationLength = conversationHistory.length;
     const lowerMessage = userMessage.toLowerCase();
     
     // Initial symptom assessment
     if (conversationLength <= 3) {
-      return `I understand you're experiencing some health concerns. Let me help you through a systematic symptom assessment.
+      return `I understand you're experiencing health concerns, and I want to assure you that you're receiving professional-grade medical assessment. Drawing from my 20 years of clinical experience, I'll conduct a comprehensive symptom evaluation using established medical protocols.
 
-**Step 1: Symptom Overview**
-Can you describe your main symptoms in detail? Please include:
-• What exactly are you feeling?
-• When did these symptoms start?
-• How severe would you rate them (1-10)?
-• Have they gotten worse, better, or stayed the same?
+**Professional Clinical Assessment - Phase 1: Symptom Characterization**
 
-This information will help me provide better guidance and determine if you need immediate medical attention.`;
+As a medical professional, I need to gather specific clinical data to provide accurate guidance. Please provide detailed information about:
+
+**Primary Symptom Profile:**
+• Precise description of your symptoms (quality, character, location)
+• Onset timing and circumstances (gradual vs. sudden)
+• Severity assessment using validated pain/symptom scales (1-10)
+• Progression pattern (improving, worsening, or stable)
+• Associated symptoms or systemic manifestations
+
+**Clinical History:**
+• Duration of symptoms
+• Precipitating factors or triggers
+• Previous similar episodes
+• Current medications and recent changes
+• Relevant medical history
+
+This systematic approach, refined through decades of clinical practice, ensures I can provide you with the most accurate professional assessment and appropriate medical guidance.`;
     }
     
     // Follow-up questions based on symptoms
@@ -261,103 +276,137 @@ This information helps me provide more accurate guidance.`;
     }
     
     // Assessment and recommendations
-    if (conversationLength <= 9) {
+if (conversationLength <= 9) {
       const urgencyLevel = assessUrgencyLevel(lowerMessage);
       
       if (urgencyLevel === 'high') {
-        return `**⚠️ URGENT ASSESSMENT RESULT**
+        return `**🚨 URGENT CLINICAL ASSESSMENT - IMMEDIATE MEDICAL ATTENTION REQUIRED**
 
-Based on your symptoms, I recommend **seeking immediate medical attention**. Here's why:
+Based on my 20 years of clinical experience and evidence-based medical protocols, your symptom constellation indicates a **HIGH-PRIORITY MEDICAL CONDITION** requiring immediate professional intervention.
 
-• Your symptoms may indicate a condition requiring prompt evaluation
-• Early intervention can prevent complications
-• Professional medical assessment is needed for accurate diagnosis
+**Clinical Rationale:**
+• Your symptoms align with conditions that require urgent medical evaluation
+• Early medical intervention is critical to prevent potential complications
+• The symptom pattern suggests time-sensitive pathology
+• Delayed treatment could result in adverse outcomes
 
-**Immediate Actions:**
-• Contact your doctor or visit an urgent care center
-• If symptoms worsen, consider emergency care
-• Keep track of any changes in your condition
+**Professional Recommendations - IMMEDIATE ACTION REQUIRED:**
 
-**When to seek emergency care:**
-• Severe difficulty breathing
-• Chest pain or pressure
-• Severe abdominal pain
-• High fever with confusion
-• Signs of severe dehydration
+**Primary Actions:**
+• **Contact your physician immediately** or proceed to urgent care
+• **If symptoms worsen or new concerning symptoms develop, seek emergency care**
+• **Document all symptoms and their progression** for medical providers
+• **Bring current medications and medical history** to your appointment
 
-Would you like me to help you find nearby medical facilities or provide more specific guidance for your situation?`;
+**RED FLAG SYMPTOMS - Call 911 immediately if you experience:**
+• Severe respiratory distress or inability to breathe
+• Chest pain with radiation or pressure sensation
+• Severe abdominal pain with systemic symptoms
+• High fever (>38.5°C/101.3°F) with altered mental status
+• Signs of severe dehydration or circulatory compromise
+• Neurological symptoms (confusion, severe headache, vision changes)
+
+**Clinical Follow-up:**
+Based on my extensive experience, I strongly recommend expedited medical evaluation. Would you like assistance locating appropriate medical facilities or guidance on presenting your symptoms to healthcare providers?`;
       }
       
-      if (urgencyLevel === 'medium') {
-        return `**📋 ASSESSMENT RESULT - MODERATE CONCERN**
+if (urgencyLevel === 'medium') {
+        return `**📋 PROFESSIONAL CLINICAL ASSESSMENT - MODERATE PRIORITY**
 
-Based on your symptoms, I recommend **scheduling a medical appointment within the next few days**. Here's my assessment:
+Based on my 20 years of clinical experience and systematic symptom evaluation, your condition requires **professional medical attention within 24-48 hours**. This assessment follows established clinical guidelines and evidence-based medicine principles.
 
-**Possible Considerations:**
-• Your symptoms warrant professional evaluation
-• Early treatment can improve outcomes
-• Monitoring is important to prevent progression
+**Clinical Assessment:**
+• Your symptom profile indicates a condition requiring professional evaluation
+• Early medical intervention will optimize treatment outcomes
+• Systematic monitoring is essential to prevent symptom progression
+• The clinical presentation warrants structured medical management
 
-**Recommended Actions:**
-• Schedule an appointment with your primary care physician
-• Continue monitoring your symptoms
-• Rest and maintain good hydration
-• Avoid strenuous activities until evaluated
+**Professional Recommendations:**
 
-**Red Flags - Seek immediate care if you experience:**
-• Worsening symptoms
-• New concerning symptoms
-• Difficulty breathing
-• Severe pain
+**Primary Actions:**
+• **Schedule appointment with your primary care physician within 24-48 hours**
+• **Implement symptom monitoring protocol** (frequency, severity, associated symptoms)
+• **Maintain comprehensive symptom diary** for medical consultation
+• **Follow evidence-based supportive care measures**
 
-**Self-Care Measures:**
-• Get adequate rest
-• Stay hydrated
-• Eat nutritious foods
-• Monitor your temperature
+**Clinical Management Guidelines:**
+• Adequate rest and sleep hygiene (7-9 hours)
+• Optimal hydration (2-3 liters daily unless contraindicated)
+• Balanced nutrition with emphasis on immune-supporting nutrients
+• Avoid strenuous physical activity until medical clearance
+• Temperature monitoring if fever is present
 
-Would you like specific guidance on managing your symptoms or help finding appropriate medical care?`;
+**RED FLAG SYMPTOMS - Seek immediate medical care if you develop:**
+• Significant worsening of current symptoms
+• New concerning symptoms or systemic manifestations
+• Respiratory distress or breathing difficulties
+• Severe pain (>7/10 on pain scale)
+• High fever with systemic symptoms
+• Signs of dehydration or circulatory compromise
+
+**Professional Follow-up:**
+Would you like specific evidence-based guidance on symptom management or assistance finding appropriate medical care? I can provide detailed recommendations based on your specific clinical presentation.`;
       }
       
-      return `**✅ ASSESSMENT RESULT - LOW CONCERN**
+return `**✅ PROFESSIONAL CLINICAL ASSESSMENT - LOW ACUITY**
 
-Based on your symptoms, this appears to be a **minor health concern** that can likely be managed with self-care, though monitoring is still important.
+Based on my 20 years of clinical experience and evidence-based assessment protocols, your symptom presentation indicates a **low-acuity condition** that can be effectively managed with professional-grade self-care measures. However, as a medical professional, I emphasize the importance of continued monitoring.
 
-**My Assessment:**
-• Your symptoms are common and typically resolve with time
-• Self-care measures should help improve your condition
-• Low risk of serious complications
+**Clinical Assessment:**
+• Your symptoms align with common, self-limiting conditions
+• Evidence-based self-care interventions should provide symptom relief
+• Low probability of serious complications based on clinical presentation
+• Prognosis is excellent with appropriate management
 
-**Recommended Self-Care:**
-• Get plenty of rest
-• Stay well-hydrated
-• Maintain a healthy diet
-• Use over-the-counter medications as appropriate
-• Monitor your symptoms for changes
+**Professional Self-Care Protocol:**
 
-**When to seek medical care:**
-• Symptoms persist beyond expected timeframe
-• Symptoms worsen significantly
-• New concerning symptoms develop
-• You have underlying health conditions
+**Primary Interventions:**
+• **Rest and recovery:** 7-9 hours of quality sleep
+• **Hydration management:** 2-3 liters of fluid daily (water, herbal teas, clear broths)
+• **Nutritional support:** Balanced diet with emphasis on vitamin C, zinc, and anti-inflammatory foods
+• **Symptom relief:** Appropriate over-the-counter medications as per established guidelines
+• **Activity modification:** Gradual return to normal activities as tolerated
 
-**Follow-up Timeline:**
-• If no improvement in 3-5 days, consider seeing a healthcare provider
-• Continue monitoring daily
+**Clinical Monitoring Parameters:**
+• **Daily symptom assessment:** Severity, frequency, and associated symptoms
+• **Temperature monitoring:** If fever is present
+• **Functional assessment:** Impact on daily activities
+• **Symptom diary:** Document patterns and triggers
 
-Would you like specific advice on managing your symptoms or information about when to seek medical care?`;
+**Medical Consultation Indicators:**
+• **Symptom persistence:** No improvement within 5-7 days
+• **Symptom progression:** Worsening severity or new symptoms
+• **Functional impairment:** Significant impact on daily activities
+• **Comorbidity considerations:** If you have underlying health conditions
+
+**Evidence-Based Timeline:**
+• **Days 1-3:** Initial symptom management and monitoring
+• **Days 4-7:** Expected symptom improvement
+• **Day 7+:** Medical consultation if no improvement
+
+Would you like specific evidence-based recommendations for symptom management or detailed guidance on when to seek medical consultation? I can provide professional protocols tailored to your specific presentation.`;
     }
     
-    // Ongoing support and follow-up
-    return `I'm here to provide ongoing support for your health concerns. Based on our conversation, I can help you:
+// Ongoing support and follow-up
+    return `As your dedicated medical professional with 20 years of clinical experience, I'm committed to providing comprehensive ongoing support for your health concerns. Based on our thorough clinical assessment, I can continue to offer expert guidance in several areas:
 
-• Monitor your symptom progression
-• Provide guidance on self-care measures
-• Help you decide when to seek medical care
-• Answer questions about your condition
-• Assist with finding appropriate healthcare resources
+**Ongoing Professional Support:**
+• **Advanced symptom monitoring:** Using clinical protocols and evidence-based assessment tools
+• **Personalized care recommendations:** Tailored to your specific clinical presentation
+• **Medical decision support:** Helping you determine appropriate timing for professional care
+• **Clinical education:** Answering questions about your condition using medical expertise
+• **Healthcare navigation:** Assisting with finding appropriate medical resources and specialists
 
-Is there anything specific about your symptoms or care plan you'd like to discuss further?`;
+**Evidence-Based Follow-up:**
+• **Risk stratification:** Continued assessment of your symptom progression
+• **Treatment optimization:** Adjusting recommendations based on your response
+• **Complication prevention:** Identifying early warning signs requiring intervention
+• **Care coordination:** Guidance on communicating with healthcare providers
+
+**Professional Commitment:**
+Drawing from my extensive clinical experience, I remain dedicated to providing you with the highest standard of medical guidance. Your health outcomes are my priority, and I'm here to support you with professional expertise throughout your care journey.
+
+Is there anything specific about your symptoms, treatment plan, or medical concerns you'd like to discuss further? I'm here to provide detailed, evidence-based guidance tailored to your individual needs.`;
   };
 
   const assessUrgencyLevel = (message) => {
