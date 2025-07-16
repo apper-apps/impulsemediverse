@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
+import { toast } from "react-toastify";
 import ApperIcon from "@/components/ApperIcon";
-import Button from "@/components/atoms/Button";
+import Error from "@/components/ui/Error";
+import Loading from "@/components/ui/Loading";
+import ChatInterface from "@/components/organisms/ChatInterface";
 import Card from "@/components/atoms/Card";
 import Badge from "@/components/atoms/Badge";
-import ChatInterface from "@/components/organisms/ChatInterface";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
+import Button from "@/components/atoms/Button";
 import { departmentService } from "@/services/api/departmentService";
-import { toast } from "react-toastify";
 
 const Consultation = () => {
   const { departmentId } = useParams();
@@ -89,11 +89,35 @@ const Consultation = () => {
             icon="Square"
           >
             End Consultation
+>
+            End Consultation
           </Button>
         </div>
       </div>
 
-      {/* Department Info */}
+      {/* Emergency Information Banner */}
+        <div className="flex items-center space-x-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-red-100 to-red-200 rounded-lg flex items-center justify-center">
+            <ApperIcon name="AlertTriangle" size={24} className="text-red-600" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center space-x-3 mb-2">
+              <Badge variant="destructive" className="flex items-center space-x-1">
+                <ApperIcon name="Phone" size={14} />
+                <span>Emergency</span>
+              </Badge>
+              <span className="text-red-900 font-semibold">For medical emergencies:</span>
+              <div className="flex items-center space-x-2 bg-red-600 text-white px-3 py-1 rounded-lg">
+                <ApperIcon name="Phone" size={16} />
+                <span className="font-bold text-lg">112</span>
+              </div>
+            </div>
+            <p className="text-red-800 text-sm">
+              MediVerse AI provides consultation but is not a replacement for emergency services.
+            </p>
+          </div>
+        </div>
+      </Card>
       <Card className="p-6">
         <div className="flex items-start space-x-4">
           <div className="w-16 h-16 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center">
