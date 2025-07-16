@@ -1,19 +1,18 @@
 import { Route, Router, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import AuthenticatedDashboard from "@/components/pages/AuthenticatedDashboard";
 import React from "react";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Layout from "@/components/organisms/Layout";
 import SignIn from "@/components/pages/SignIn";
 import Consultation from "@/components/pages/Consultation";
 import HealthTrends from "@/components/pages/HealthTrends";
+import AuthenticatedDashboard from "@/components/pages/AuthenticatedDashboard";
 import SignUp from "@/components/pages/SignUp";
 import Profile from "@/components/pages/Profile";
 import Departments from "@/components/pages/Departments";
 import Records from "@/components/pages/Records";
 import Dashboard from "@/components/pages/Dashboard";
 import Consultations from "@/components/pages/Consultations";
-import LandingPage from "@/components/pages/LandingPage";
 import { AuthProvider } from "@/contexts/AuthContext";
 
 function App() {
@@ -22,10 +21,8 @@ function App() {
       <Router>
         <div className="min-h-screen bg-white">
           <Routes>
-            {/* Public landing page */}
-            <Route path="/" element={<LandingPage />} />
-            
-            {/* Authentication routes */}
+            {/* Public routes */}
+            <Route path="/" element={<Dashboard />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             
