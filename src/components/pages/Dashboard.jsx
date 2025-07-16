@@ -334,10 +334,10 @@ return (
                   View All
                 </Button>
               </div>
-              <div className="space-y-4">
+<div className="space-y-4">
                 {recentConsultations.length > 0 ? (
                   recentConsultations.map((consultation) => (
-<div key={consultation.id} className="border-b border-gray-100 pb-4 last:border-b-0">
+<div key={consultation.Id} className="border-b border-gray-100 pb-4 last:border-b-0">
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="font-medium text-gray-900">{consultation.department}</h3>
@@ -381,10 +381,10 @@ return (
                   View All
                 </Button>
               </div>
-              <div className="space-y-4">
+<div className="space-y-4">
                 {recentRecords.length > 0 ? (
                   recentRecords.map((record) => (
-<div key={record.id} className="border-b border-gray-100 pb-4 last:border-b-0">
+<div key={record.Id} className="border-b border-gray-100 pb-4 last:border-b-0">
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="font-medium text-gray-900">{record.type}</h3>
