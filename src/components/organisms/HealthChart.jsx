@@ -167,11 +167,21 @@ const HealthChart = ({ data, title, type = "line", color = "#3B82F6", showContro
     return [mainSeries, forecastSeries];
   };
 
-  const getInsight = () => {
-    if (data.length < 2) return "Not enough data for insights";
+const getInsight = () => {
+    if (!data || data.length < 2) return "Not enough data for insights";
     
-    const latest = data[data.length - 1].value;
-    const previous = data[data.length - 2].value;
+    const latestItem = data[data.length - 1];
+    const previousItem = data[data.length - 2];
+    
+    if (!latestItem || !previousItem || latestItem.value === undefined || previousItem.value === undefined) {
+      return "Insufficient data for trend analysis";
+    }
+    
+    const latest = latestItem.value;
+    const previous = previousItem.value;
+    
+    if (previous === 0) return "Unable to calculate percentage change";
+    
     const trend = latest > previous ? "increasing" : "decreasing";
     const percentage = Math.abs(((latest - previous) / previous) * 100).toFixed(1);
     
@@ -181,7 +191,6 @@ const HealthChart = ({ data, title, type = "line", color = "#3B82F6", showContro
   const getTrendPrediction = () => {
     const forecast = getAdvancedForecast();
     if (!forecast) return "Need more data for predictions";
-    
     const nextValue = forecast.points[0]?.value;
     const direction = forecast.trend === "increasing" ? "continue rising" : "continue declining";
     
