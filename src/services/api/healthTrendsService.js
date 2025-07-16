@@ -13,25 +13,26 @@ const initializeData = () => {
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const healthTrendsService = {
-  async getAll() {
+async getAll() {
     await delay(300);
     initializeData();
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return [...data];
+    return Array.isArray(data) ? [...data] : [];
   },
 
-  async getById(id) {
+async getById(id) {
     await delay(200);
     initializeData();
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return data.find(trend => trend.Id === parseInt(id));
+    if (!Array.isArray(data)) return null;
+    return data.find(trend => trend.Id === parseInt(id)) || null;
   },
 
-  async getByPatientId(patientId) {
+async getByPatientId(patientId) {
     await delay(300);
     initializeData();
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return data.filter(trend => trend.patientId === patientId);
+    return Array.isArray(data) ? data.filter(trend => trend.patientId === patientId) : [];
   },
 
   async getByMetric(metric) {
@@ -101,14 +102,18 @@ async addDataPoint(trendId, dataPoint) {
     await delay(300);
     initializeData();
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    const trend = data.find(t => t.Id === parseInt(trendId));
+const trend = data.find(t => t.Id === parseInt(trendId));
     
-    if (!trend || trend.data.length < 4) {
+    if (!trend || !Array.isArray(trend.data) || trend.data.length < 4) {
       throw new Error("Insufficient data for forecasting");
     }
     
-    const values = trend.data.map(d => d.value);
+    const values = trend.data.map(d => d?.value || 0).filter(v => typeof v === 'number');
     const n = values.length;
+    
+    if (n < 4) {
+      throw new Error("Insufficient valid data for forecasting");
+    }
     
     // Linear regression for forecasting
     const xValues = Array.from({length: n}, (_, i) => i);

@@ -42,10 +42,9 @@ const HealthChart = ({ data, title, type = "line", color = "#3B82F6", showContro
       },
 grid: {
         borderColor: "#f1f5f9",
-        strokeDashArray: 4
-      },
+},
       xaxis: {
-        categories: (data || []).map(item => item.date),
+        categories: Array.isArray(data) ? data.map(item => item?.date || '') : [],
         labels: {
           style: {
             colors: "#64748b",
@@ -53,6 +52,7 @@ grid: {
           }
         }
       },
+      yaxis: {
       yaxis: {
         labels: {
           style: {
@@ -104,16 +104,17 @@ grid: {
     return baseOptions;
   };
 const getAdvancedForecast = () => {
-    if (!data || data.length < 4) return null;
+    if (!Array.isArray(data) || data.length < 4) return null;
     
-    const values = (data || []).map(d => d.value);
+    const values = data.map(d => d?.value || 0).filter(v => typeof v === 'number');
     const n = values.length;
+    
+    if (n < 4) return null;
     
     // Linear regression for trend
     const xValues = Array.from({length: n}, (_, i) => i);
     const xMean = xValues.reduce((a, b) => a + b) / n;
     const yMean = values.reduce((a, b) => a + b) / n;
-    
     const slope = xValues.reduce((sum, x, i) => sum + (x - xMean) * (values[i] - yMean), 0) /
                   xValues.reduce((sum, x) => sum + Math.pow(x - xMean, 2), 0);
     
@@ -122,10 +123,10 @@ const getAdvancedForecast = () => {
     // Generate forecast points
     const forecastPoints = [];
     const forecastLength = Math.min(3, Math.floor(n / 2));
-    
-    for (let i = 1; i <= forecastLength; i++) {
+for (let i = 1; i <= forecastLength; i++) {
       const forecastValue = intercept + slope * (n - 1 + i);
-      const futureDate = new Date(data[data.length - 1].date);
+      const lastDataPoint = data[data.length - 1];
+      const futureDate = new Date(lastDataPoint?.date || new Date());
       futureDate.setMonth(futureDate.getMonth() + i);
       
       forecastPoints.push({
@@ -148,9 +149,10 @@ const getAdvancedForecast = () => {
   };
 
 const getSeries = () => {
+    const validData = Array.isArray(data) ? data : [];
     const mainSeries = {
       name: title,
-      data: (data || []).map(item => item.value)
+      data: validData.map(item => item?.value || 0)
     };
     
     if (!forecastEnabled) return [mainSeries];
@@ -160,18 +162,20 @@ const getSeries = () => {
     
     const forecastSeries = {
       name: "Forecast",
-      data: [...Array((data || []).length - 1).fill(null), (data || [])[((data || []).length - 1)]?.value, ...forecast.points.map(p => p.value)]
+      data: [...Array(validData.length - 1).fill(null), validData[validData.length - 1]?.value || 0, ...forecast.points.map(p => p.value)]
     };
     
     return [mainSeries, forecastSeries];
   };
 const getInsight = () => {
-    if (!data || !Array.isArray(data) || data.length < 2) return "Not enough data for insights";
+    if (!Array.isArray(data) || data.length < 2) return "Not enough data for insights";
     
     const latestItem = data[data.length - 1];
     const previousItem = data[data.length - 2];
     
-    if (!latestItem || !previousItem || latestItem.value === undefined || previousItem.value === undefined) {
+    if (!latestItem || !previousItem || 
+        typeof latestItem.value !== 'number' || 
+        typeof previousItem.value !== 'number') {
       return "Insufficient data for trend analysis";
     }
     
@@ -201,9 +205,11 @@ const getInsight = () => {
     };
   };
 const getHealthStatus = () => {
-    if (!data || !Array.isArray(data) || data.length === 0) return "no-data";
+    if (!Array.isArray(data) || data.length === 0) return "no-data";
     
     const latest = data[data.length - 1]?.value;
+    if (typeof latest !== 'number') return "no-data";
+    
     const prediction = getTrendPrediction();
     
     if (prediction.trend === "positive" && latest > 0) return "improving";
@@ -225,9 +231,13 @@ const getHealthStatus = () => {
   ];
 
 const exportData = () => {
+    const validData = Array.isArray(data) ? data : [];
+    const forecast = forecastEnabled ? getAdvancedForecast() : null;
+    const forecastData = forecast?.points || [];
+    
     const csvContent = `data:text/csv;charset=utf-8,Date,Value,Type\n${[
-      ...(data || []).map(item => [item.date, item.value, "Actual"]),
-      ...(forecastEnabled && getAdvancedForecast()?.points?.map(p => [p.date, p.value, "Forecast"]) || [])
+      ...validData.map(item => [item?.date || '', item?.value || 0, "Actual"]),
+      ...forecastData.map(p => [p?.date || '', p?.value || 0, "Forecast"])
     ].map(row => row.join(",")).join("\n")}`;
     
     const blob = new Blob([csvContent], { type: 'text/csv' });
