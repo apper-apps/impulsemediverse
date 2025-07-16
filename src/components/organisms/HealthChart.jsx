@@ -52,8 +52,15 @@ grid: {
           }
         }
       },
-      yaxis: {
-      yaxis: {
+yaxis: {
+        labels: {
+          style: {
+            colors: "#64748b",
+            fontSize: "12px"
+          }
+        }
+      },
+yaxis: {
         labels: {
           style: {
             colors: "#64748b",
