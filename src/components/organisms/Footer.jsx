@@ -1,6 +1,6 @@
-import React from 'react';
-import ApperIcon from '@/components/ApperIcon';
-import { cn } from '@/utils/cn';
+import React from "react";
+import { cn } from "@/utils/cn";
+import ApperIcon from "@/components/ApperIcon";
 
 const Footer = ({ className }) => {
   const footerSections = [
@@ -39,13 +39,13 @@ const Footer = ({ className }) => {
   ];
 
   return (
-    <footer className={cn("bg-white border-t border-gray-200 mt-auto", className)}>
-      <div className="max-w-7xl mx-auto px-4 lg:px-6 py-12">
+<footer className={cn("bg-gray-50 border-t border-gray-200", className)}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
                 <ApperIcon name="Heart" size={20} className="text-white" />
               </div>
               <div>
@@ -58,9 +58,9 @@ const Footer = ({ className }) => {
               comprehensive health monitoring, and personalized treatment plans 
               available 24/7.
             </p>
-            <div className="flex items-center space-x-2 px-3 py-2 bg-gradient-to-r from-accent-100 to-accent-200 rounded-lg inline-flex">
-              <ApperIcon name="Shield" size={16} className="text-accent-600" />
-              <span className="text-sm font-medium text-accent-800">HIPAA Compliant & Secure</span>
+            <div className="flex items-center space-x-2 px-3 py-2 bg-gradient-to-r from-green-100 to-green-200 rounded-lg inline-flex">
+              <ApperIcon name="Shield" size={16} className="text-green-600" />
+              <span className="text-sm font-medium text-green-800">HIPAA Compliant & Secure</span>
             </div>
           </div>
 
@@ -73,7 +73,7 @@ const Footer = ({ className }) => {
                   <li key={link.name}>
                     <a 
                       href={link.href}
-                      className="text-gray-600 hover:text-primary-600 transition-colors duration-200 text-sm footer-link"
+                      className="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm footer-link"
                     >
                       {link.name}
                     </a>
@@ -105,13 +105,13 @@ const Footer = ({ className }) => {
                     className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
                     aria-label={`Follow us on ${social}`}
                   >
-                    <ApperIcon name={social} size={16} className="text-gray-600 hover:text-primary-600" />
+                    <ApperIcon name={social} size={16} className="text-gray-600 hover:text-blue-600" />
                   </button>
                 ))}
               </div>
             </div>
           </div>
-        </div>
+</div>
       </div>
     </footer>
   );

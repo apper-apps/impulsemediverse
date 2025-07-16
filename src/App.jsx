@@ -12,18 +12,33 @@ import Profile from "@/components/pages/Profile";
 import SignIn from "@/components/pages/SignIn";
 import SignUp from "@/components/pages/SignUp";
 import ProtectedRoute from "@/components/ProtectedRoute";
+
+// Create new Landing Page component
+const LandingPage = () => {
+  return (
+    <div className="min-h-screen bg-white">
+      <Layout isLanding={true}>
+        <Dashboard />
+      </Layout>
+    </div>
+  );
+};
+
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-white">
           <Routes>
+            {/* Public landing page */}
+            <Route path="/" element={<LandingPage />} />
+            
             {/* Authentication routes */}
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             
             {/* Protected routes */}
-            <Route path="/" element={
+            <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Layout />
               </ProtectedRoute>
@@ -37,7 +52,7 @@ function App() {
               <Route path="profile" element={<Profile />} />
             </Route>
           </Routes>
-<ToastContainer
+          <ToastContainer
             position="top-right"
             autoClose={3000}
             hideProgressBar={false}
