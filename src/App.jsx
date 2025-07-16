@@ -1,4 +1,4 @@
-import { Route, Router, Routes } from "react-router-dom";
+import { Route, BrowserRouter, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import React from "react";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -18,7 +18,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 function App() {
   return (
     <AuthProvider>
-      <Router>
+<BrowserRouter>
         <div className="min-h-screen bg-white">
           <Routes>
             {/* Public routes */}
@@ -53,9 +53,9 @@ function App() {
             pauseOnHover
             theme="light"
             style={{ zIndex: 9999 }}
-          />
+/>
         </div>
-      </Router>
+      </BrowserRouter>
     </AuthProvider>
   );
 }
