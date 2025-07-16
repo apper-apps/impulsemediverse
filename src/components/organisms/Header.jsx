@@ -27,11 +27,13 @@ const Header = ({ currentDepartment, onMobileMenuToggle }) => {
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
                 <ApperIcon name="Heart" size={20} className="text-white" />
-              </div>
+</div>
               <div className="hidden sm:block">
                 <h1 className="text-xl font-bold text-gray-900">MediVerse AI</h1>
+                <p className="text-sm text-primary-600 font-medium">The future of healthcare is here</p>
+                <p className="text-xs text-gray-500">AI-powered medical care available 24/7</p>
                 {currentDepartment && (
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 mt-1">
                     {currentDepartment}
                   </p>
                 )}
