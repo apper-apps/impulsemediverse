@@ -13,6 +13,7 @@ import Consultations from "@/components/pages/Consultations";
 import Departments from "@/components/pages/Departments";
 import Consultation from "@/components/pages/Consultation";
 import StatCard from "@/components/molecules/StatCard";
+import HealthChart from "@/components/molecules/HealthChart";
 import { medicalRecordService } from "@/services/api/medicalRecordService";
 import { consultationService } from "@/services/api/consultationService";
 import { departmentService } from "@/services/api/departmentService";
@@ -25,17 +26,22 @@ const Dashboard = () => {
   const [error, setError] = useState("");
 const navigate = useNavigate();
 
-  // Health trends data and helper functions
+// Health trends data and helper functions
   const [healthTrends, setHealthTrends] = useState([
     {
       Id: "1",
       metric: "Blood Pressure",
       category: "Cardiovascular",
       unit: "mmHg",
+      chartType: "line",
+      color: "#EF4444",
       data: [
         { date: "2024-01-01", value: 120 },
         { date: "2024-01-15", value: 118 },
-        { date: "2024-02-01", value: 115 }
+        { date: "2024-02-01", value: 115 },
+        { date: "2024-02-15", value: 117 },
+        { date: "2024-03-01", value: 113 },
+        { date: "2024-03-15", value: 112 }
       ]
     },
     {
@@ -43,10 +49,15 @@ const navigate = useNavigate();
       metric: "Heart Rate",
       category: "Cardiovascular",
       unit: "bpm",
+      chartType: "area",
+      color: "#3B82F6",
       data: [
         { date: "2024-01-01", value: 75 },
         { date: "2024-01-15", value: 72 },
-        { date: "2024-02-01", value: 70 }
+        { date: "2024-02-01", value: 70 },
+        { date: "2024-02-15", value: 73 },
+        { date: "2024-03-01", value: 71 },
+        { date: "2024-03-15", value: 69 }
       ]
     },
     {
@@ -54,10 +65,15 @@ const navigate = useNavigate();
       metric: "Blood Sugar",
       category: "Metabolic", 
       unit: "mg/dL",
+      chartType: "bar",
+      color: "#10B981",
       data: [
         { date: "2024-01-01", value: 95 },
         { date: "2024-01-15", value: 92 },
-        { date: "2024-02-01", value: 88 }
+        { date: "2024-02-01", value: 88 },
+        { date: "2024-02-15", value: 90 },
+        { date: "2024-03-01", value: 86 },
+        { date: "2024-03-15", value: 84 }
       ]
     },
     {
@@ -65,10 +81,15 @@ const navigate = useNavigate();
       metric: "Weight",
       category: "Metabolic",
       unit: "lbs",
+      chartType: "line",
+      color: "#8B5CF6",
       data: [
         { date: "2024-01-01", value: 180 },
         { date: "2024-01-15", value: 178 },
-        { date: "2024-02-01", value: 175 }
+        { date: "2024-02-01", value: 175 },
+        { date: "2024-02-15", value: 177 },
+        { date: "2024-03-01", value: 174 },
+        { date: "2024-03-15", value: 172 }
       ]
     }
   ]);
@@ -96,19 +117,52 @@ const navigate = useNavigate();
     return { status, change, message };
   };
 
+  const getAdvancedForecast = (trend) => {
+    if (!trend?.data || trend.data.length < 4) {
+      return { prediction: "N/A", confidence: "N/A", direction: "stable" };
+    }
+    
+    const values = trend.data.map(d => d.value);
+    const n = values.length;
+    
+    // Linear regression
+    const xValues = Array.from({length: n}, (_, i) => i);
+    const xMean = xValues.reduce((a, b) => a + b) / n;
+    const yMean = values.reduce((a, b) => a + b) / n;
+    
+    const slope = xValues.reduce((sum, x, i) => sum + (x - xMean) * (values[i] - yMean), 0) /
+                  xValues.reduce((sum, x) => sum + Math.pow(x - xMean, 2), 0);
+    
+    const intercept = yMean - slope * xMean;
+    const nextValue = intercept + slope * n;
+    
+    // Calculate confidence
+    const residuals = values.map((val, i) => val - (intercept + slope * i));
+    const mse = residuals.reduce((sum, r) => sum + r * r, 0) / n;
+    const confidence = Math.max(65, Math.min(95, 100 - Math.sqrt(mse)));
+    
+    return {
+      prediction: nextValue.toFixed(1),
+      confidence: confidence.toFixed(0),
+      direction: slope > 0 ? "increasing" : slope < 0 ? "decreasing" : "stable",
+      strength: Math.abs(slope) > 1 ? "strong" : "moderate"
+    };
+  };
+
   const getHealthTrendPrediction = (trend) => {
     if (!trend?.data || trend.data.length < 2) {
       return "Need more data for accurate prediction";
     }
     
+    const forecast = getAdvancedForecast(trend);
     const insights = {
-      "Blood Pressure": "Trending downward - maintain current lifestyle",
-      "Heart Rate": "Stable range - excellent cardiovascular health",
-      "Blood Sugar": "Improving control - continue current diet plan", 
-      "Weight": "Steady progress - on track to reach target"
+      "Blood Pressure": `${forecast.direction} trend - ${forecast.confidence}% confidence`,
+      "Heart Rate": `${forecast.strength} ${forecast.direction} pattern detected`,
+      "Blood Sugar": `${forecast.direction} control - ${forecast.confidence}% accuracy`, 
+      "Weight": `${forecast.direction} trajectory - ${forecast.strength} trend`
     };
     
-    return insights[trend.metric] || "Continue monitoring for optimal health";
+    return insights[trend.metric] || `${forecast.direction} trend with ${forecast.confidence}% confidence`;
   };
 
   useEffect(() => {
@@ -331,24 +385,63 @@ const navigate = useNavigate();
           </div>
 </Card>
       </div>
-
-      {/* Health Trend Cards */}
+{/* Health Trends Dashboard */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Health Trends & Predictions</h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/trends")}
-          >
-            View All Trends
-          </Button>
+          <h2 className="text-xl font-semibold text-gray-900">Health Trends Dashboard</h2>
+          <div className="flex items-center space-x-3">
+            <Button
+              variant="outline"
+              size="sm"
+              icon="Settings"
+            >
+              Chart Settings
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/trends")}
+            >
+              View All Trends
+            </Button>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {healthTrends.map((trend, index) => (
+            <motion.div
+              key={trend.Id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <HealthChart
+                data={trend.data}
+                title={`${trend.metric} (${trend.unit})`}
+                type={trend.chartType}
+                color={trend.color}
+                showControls={true}
+                showForecast={true}
+              />
+            </motion.div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Advanced Forecasting Summary */}
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-gray-900">AI Health Forecasting</h2>
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-sm text-gray-600">Live Predictions</span>
+          </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {healthTrends.slice(0, 4).map((trend) => {
+          {healthTrends.map((trend) => {
             const insight = getHealthTrendInsight(trend);
-            const prediction = getHealthTrendPrediction(trend);
+            const forecast = getAdvancedForecast(trend);
             
             return (
               <motion.div
@@ -402,6 +495,13 @@ const navigate = useNavigate();
                     </span>
                   </div>
                   
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Forecast</span>
+                    <span className="text-lg font-semibold text-blue-600">
+                      {forecast.prediction} {trend.unit}
+                    </span>
+                  </div>
+                  
                   <div className="flex items-center space-x-2">
                     <ApperIcon 
                       name={insight.change > 0 ? "TrendingUp" : "TrendingDown"} 
@@ -411,12 +511,17 @@ const navigate = useNavigate();
                     <span className="text-sm text-gray-600">{insight.message}</span>
                   </div>
                   
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <ApperIcon name="Zap" size={14} className="text-yellow-600" />
-                      <span className="text-xs font-medium text-gray-700">Prediction</span>
+                  <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-3">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <ApperIcon name="Zap" size={14} className="text-blue-600" />
+                      <span className="text-xs font-medium text-gray-700">AI Prediction</span>
+                      <span className="text-xs bg-white px-2 py-1 rounded-full text-gray-600">
+                        {forecast.confidence}% confidence
+                      </span>
                     </div>
-                    <p className="text-sm text-gray-600">{prediction}</p>
+                    <p className="text-sm text-gray-600">
+                      {forecast.strength} {forecast.direction} trend detected
+                    </p>
                   </div>
                 </div>
               </motion.div>
