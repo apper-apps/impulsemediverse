@@ -26,8 +26,16 @@
     "icon": "Users",
     "description": "Mental health professional for psychological support, therapy, and emotional wellness.",
     "aiPrompt": "You are a Psychology AI assistant. Offer mental health support, psychological guidance, and emotional wellness advice."
+},
+  {
+    "Id": 5,
+    "name": "General Nurse",
+    "icon": "UserCheck",
+    "description": "Nursing care specialist for patient support, health education, and general wellness guidance.",
+    "aiPrompt": "You are a General Nurse AI assistant. Provide nursing care guidance, health education, and wellness support."
   },
-{
+},
+  {
     "Id": 5,
     "name": "General Nurse",
     "icon": "UserCheck",
