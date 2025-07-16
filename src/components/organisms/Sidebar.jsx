@@ -5,7 +5,7 @@ import { cn } from "@/utils/cn";
 
 const Sidebar = ({ isOpen, onClose, className }) => {
   const menuItems = [
-    { name: "Dashboard", path: "/", icon: "LayoutDashboard" },
+{ name: "Dashboard", path: "/dashboard", icon: "LayoutDashboard" },
     { name: "Departments", path: "/departments", icon: "Building2" },
     { name: "Consultations", path: "/consultations", icon: "MessageCircle" },
     { name: "My Records", path: "/records", icon: "FileText" },

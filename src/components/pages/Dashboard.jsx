@@ -3,20 +3,20 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import ApperIcon from "@/components/ApperIcon";
-import HealthChart from "@/components/organisms/HealthChart";
-import Badge from "@/components/atoms/Badge";
-import Button from "@/components/atoms/Button";
-import Card from "@/components/atoms/Card";
 import Error from "@/components/ui/Error";
 import Loading from "@/components/ui/Loading";
+import HealthChart from "@/components/organisms/HealthChart";
+import Consultation from "@/components/pages/Consultation";
+import Departments from "@/components/pages/Departments";
 import Records from "@/components/pages/Records";
 import Consultations from "@/components/pages/Consultations";
-import Departments from "@/components/pages/Departments";
-import Consultation from "@/components/pages/Consultation";
 import StatCard from "@/components/molecules/StatCard";
+import Card from "@/components/atoms/Card";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
 import { medicalRecordService } from "@/services/api/medicalRecordService";
-import { consultationService } from "@/services/api/consultationService";
 import { departmentService } from "@/services/api/departmentService";
+import { consultationService } from "@/services/api/consultationService";
 
 const Dashboard = () => {
   const [departments, setDepartments] = useState([]);
@@ -238,160 +238,166 @@ const navigate = useNavigate();
   ];
 
 return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-4xl md:text-6xl font-bold text-gray-900 mb-6"
-            >
-              AI-Powered Healthcare
-              <br />
-              <span className="text-blue-600">Available 24/7</span>
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto"
-            >
-              Experience the future of healthcare with MediVerse AI. Get instant medical consultations, 
-              AI-powered diagnostics, and personalized treatment plans from the comfort of your home.
-            </motion.p>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
-            >
-              <Button size="lg" onClick={() => navigate('/signup')}>
-                Get Started Free
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-white shadow-sm border-b border-gray-100"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <ApperIcon name="Activity" size={28} className="text-blue-600" />
+              <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Badge variant="success">Active</Badge>
+              <Button size="sm" onClick={() => navigate('/consultation')}>
+                New Consultation
               </Button>
-              <Button variant="outline" size="lg" onClick={() => navigate('/signin')}>
-                Sign In
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+        >
+          {stats.map((stat, index) => (
+            <StatCard key={index} {...stat} />
+          ))}
+        </motion.div>
+
+        {/* Health Trends */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="mb-8"
+        >
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-gray-900">Health Trends</h2>
+              <Button variant="outline" size="sm">
+                View All
               </Button>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {healthTrends.map((trend) => {
+                const insight = getHealthTrendInsight(trend);
+                const prediction = getHealthTrendPrediction(trend);
+                return (
+                  <div key={trend.Id} className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <h3 className="font-medium text-gray-900">{trend.metric}</h3>
+                        <p className="text-sm text-gray-600">{trend.category}</p>
+                      </div>
+                      <Badge 
+                        variant={insight.status === 'improving' ? 'success' : 
+                                insight.status === 'concerning' ? 'destructive' : 'default'}
+                      >
+                        {insight.status}
+                      </Badge>
+                    </div>
+                    <HealthChart data={trend} />
+                    <div className="mt-3 space-y-1">
+                      <p className="text-sm text-gray-600">{insight.message}</p>
+                      <p className="text-xs text-gray-500">{prediction}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        </motion.div>
 
-      {/* Features Section */}
-      <section id="features" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose MediVerse AI?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Advanced AI technology meets compassionate healthcare to deliver personalized medical care
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: "Bot",
-                title: "AI-Powered Diagnostics",
-                description: "Advanced machine learning algorithms analyze symptoms and medical history to provide accurate preliminary diagnoses."
-              },
-              {
-                icon: "Clock",
-                title: "24/7 Availability",
-                description: "Access medical consultations anytime, anywhere. Our AI assistants are always ready to help with your health concerns."
-              },
-              {
-                icon: "Shield",
-                title: "HIPAA Compliant",
-                description: "Your medical data is protected with enterprise-grade security and full HIPAA compliance for peace of mind."
-              }
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow border border-gray-100"
-              >
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center mb-6">
-                  <ApperIcon name={feature.icon} size={24} className="text-blue-600" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Departments Section */}
-      <section id="departments" className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Specialized AI Departments
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our AI specialists are trained in various medical fields to provide expert care
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { name: "General Practice", icon: "Stethoscope", description: "Primary care and general health consultations" },
-              { name: "Cardiology", icon: "Heart", description: "Heart and cardiovascular health specialists" },
-              { name: "Neurology", icon: "Brain", description: "Brain and nervous system experts" },
-              { name: "Pediatrics", icon: "Baby", description: "Specialized care for children and infants" },
-              { name: "Dermatology", icon: "Sparkles", description: "Skin, hair, and nail health specialists" },
-              { name: "Mental Health", icon: "Users", description: "Psychology and psychiatric support" }
-            ].map((dept, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer group"
-                onClick={() => navigate('/signup')}
-              >
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center mb-4 group-hover:from-blue-200 group-hover:to-blue-300 transition-all">
-                  <ApperIcon name={dept.icon} size={24} className="text-blue-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{dept.name}</h3>
-                <p className="text-gray-600 text-sm">{dept.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-blue-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        {/* Recent Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Recent Consultations */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Ready to Transform Your Healthcare?
-            </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of patients who trust MediVerse AI for their healthcare needs
-            </p>
-            <Button 
-              size="lg" 
-              className="bg-white text-blue-600 hover:bg-gray-50"
-              onClick={() => navigate('/signup')}
-            >
-              Start Your Free Consultation
-            </Button>
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">Recent Consultations</h2>
+                <Button variant="outline" size="sm" onClick={() => navigate('/consultations')}>
+                  View All
+                </Button>
+              </div>
+              <div className="space-y-4">
+                {recentConsultations.length > 0 ? (
+                  recentConsultations.map((consultation) => (
+                    <div key={consultation.id} className="border-b border-gray-100 pb-4 last:border-b-0">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-medium text-gray-900">{consultation.department}</h3>
+                          <p className="text-sm text-gray-600">{consultation.reason}</p>
+                          <p className="text-xs text-gray-500">
+                            {format(new Date(consultation.createdAt), 'MMM d, yyyy')}
+                          </p>
+                        </div>
+                        <Badge variant={consultation.status === 'completed' ? 'success' : 'default'}>
+                          {consultation.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-center py-8">No recent consultations</p>
+                )}
+              </div>
+            </Card>
+          </motion.div>
+
+          {/* Recent Records */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">Recent Records</h2>
+                <Button variant="outline" size="sm" onClick={() => navigate('/records')}>
+                  View All
+                </Button>
+              </div>
+              <div className="space-y-4">
+                {recentRecords.length > 0 ? (
+                  recentRecords.map((record) => (
+                    <div key={record.id} className="border-b border-gray-100 pb-4 last:border-b-0">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-medium text-gray-900">{record.type}</h3>
+                          <p className="text-sm text-gray-600">{record.description}</p>
+                          <p className="text-xs text-gray-500">
+                            {format(new Date(record.createdAt), 'MMM d, yyyy')}
+                          </p>
+                        </div>
+                        <ApperIcon name="FileText" size={20} className="text-gray-400" />
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-center py-8">No recent records</p>
+                )}
+              </div>
+            </Card>
           </motion.div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };
+
 export default Dashboard;

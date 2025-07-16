@@ -57,7 +57,7 @@ const Header = ({ onMobileMenuToggle, isLanding = false }) => {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
-                <Button
+<Button
                   variant="outline"
                   size="sm"
                   onClick={() => navigate('/dashboard')}
@@ -121,7 +121,7 @@ const Header = ({ onMobileMenuToggle, isLanding = false }) => {
             ))}
             <div className="border-t border-gray-200 pt-2 mt-2">
               {user ? (
-                <>
+<>
                   <button
                     onClick={() => navigate('/dashboard')}
                     className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md text-sm font-medium transition-colors"
